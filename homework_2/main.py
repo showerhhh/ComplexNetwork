@@ -65,42 +65,39 @@ def community_detection(G, method='EgoNetSplitter'):
 
 
 def show_result(G, method='EgoNetSplitter'):
-    if method in ['DANMF', 'MNMF', 'EgoNetSplitter', 'NNSED', 'BigClam', 'SymmNMF']:
-        overlap = True
-    elif method in ['GEMSEC', 'EdMot', 'SCD', 'LabelPropagation']:
-        overlap = False
-    else:
-        print('参数method错误！')
-        exit(1)
     member_community = community_detection(G, method)
 
     # 图的布局
     pos = nx.spring_layout(G)
 
-    # 第一章图（社区发现前）
+    # 社区发现前
     nx.draw(G, pos, node_size=200, node_color='g', alpha=0.6)
     node_id = nx.get_node_attributes(G, 'id')
     nx.draw_networkx_labels(G, pos, labels=node_id)
     plt.savefig("./graph.png")
     plt.show()
 
-    # 第一章图（社区发现后）
+    # 社区发现后
     community = set()
     for values in member_community.values():
-        if overlap:
+        if type(values) == list:
             community.update(values)
         else:
             community.add(values)
     # #000000 ~ #FFFFFF
-    color_list = ['Pink', 'Purple', 'Blue', 'Green', 'Yellow', 'Gold', 'Orange', 'Red', 'Brown', 'Gray', '#6B8E23',
+    color_list = ['Blue', 'Green', 'Yellow', 'Gold', 'Orange', 'Red', 'Brown', 'Gray', '#6B8E23', 'Pink', 'Purple',
                   '#87CEEB', '#00FFFF', '#008080', '#7FFFAA', '#8FBC8F', '#6495ED', '#1E90FF', '#4B0082', '#DB7093',
                   '#EE82EE']
     index = 0
     for com in community:
-        if overlap:
-            list_nodes = [nodes for nodes in member_community.keys() if com in member_community[nodes]]
-        else:
-            list_nodes = [nodes for nodes in member_community.keys() if com == member_community[nodes]]
+        list_nodes = list()
+        for node, value in member_community.items():
+            if type(value) == list:
+                if com in value:
+                    list_nodes.append(node)
+            else:
+                if com == value:
+                    list_nodes.append(node)
         nx.draw_networkx_nodes(G, pos, list_nodes, node_size=200, node_color=color_list[index], alpha=0.6)  # 画点
         index += 1
     node_community = nx.get_node_attributes(G, 'community')
@@ -121,4 +118,4 @@ if __name__ == '__main__':
     G = make_graph(path)
     # 重叠社区发现方法：'DANMF', 'MNMF', 'EgoNetSplitter', 'NNSED', 'BigClam', 'SymmNMF'
     # 非重叠社区发现方法：'GEMSEC', 'EdMot', 'SCD', 'LabelPropagation'
-    show_result(G, method='EgoNetSplitter')
+    show_result(G, method='LabelPropagation')
