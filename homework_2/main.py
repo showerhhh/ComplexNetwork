@@ -118,4 +118,4 @@ if __name__ == '__main__':
     G = make_graph(path)
     # 重叠社区发现方法：'DANMF', 'MNMF', 'EgoNetSplitter', 'NNSED', 'BigClam', 'SymmNMF'
     # 非重叠社区发现方法：'GEMSEC', 'EdMot', 'SCD', 'LabelPropagation'
-    show_result(G, method='LabelPropagation')
+    show_result(G, method='BigClam')
